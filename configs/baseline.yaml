@@ -1,0 +1,86 @@
+# TerraSignal AI — Baseline experiment configuration
+# This file controls the historical-frequency baseline model and shared pipeline settings.
+# Update values as experiments evolve; keep earlier snapshots in version control.
+
+# ---------------------------------------------------------------------------
+# Study region
+# ---------------------------------------------------------------------------
+region:
+  name: Tunisia
+  # Bounding box: [min_lon, min_lat, max_lon, max_lat]
+  bbox: [7.5, 30.2, 11.6, 37.5]
+
+# ---------------------------------------------------------------------------
+# Spatial grid
+# ---------------------------------------------------------------------------
+grid:
+  resolution_deg: 0.25   # Starting hypothesis — may be revised after EDA
+
+# ---------------------------------------------------------------------------
+# Temporal settings
+# ---------------------------------------------------------------------------
+time:
+  start_date: "2023-01-01"
+  end_date:   "2023-12-31"
+  forecast_horizon_hours: 24   # Prediction window: next 24 h
+
+# ---------------------------------------------------------------------------
+# Data sources
+# ---------------------------------------------------------------------------
+data:
+  raw_dir:       data/raw
+  interim_dir:   data/interim
+  processed_dir: data/processed
+
+  firms:
+    satellite: VIIRS_SNPP_NRT   # NASA FIRMS product
+    confidence_filter: ["nominal", "high"]   # Drop 'low' confidence detections
+
+# ---------------------------------------------------------------------------
+# Label engineering
+# ---------------------------------------------------------------------------
+labels:
+  target_column: fire_next_24h
+  # Minimum number of clear-sky observations required for a cell/day to be
+  # considered a reliable negative.  Cells below this threshold are excluded
+  # from training rather than labelled as negatives.
+  min_obs_for_negative: 1
+
+# ---------------------------------------------------------------------------
+# Baseline model
+# ---------------------------------------------------------------------------
+baseline:
+  # Window (in days, look-back from each prediction date) used to compute
+  # the historical fire-detection frequency for each grid cell.
+  smoothing_window_days: 30
+  min_periods: 7   # Minimum valid days required inside the window
+
+# ---------------------------------------------------------------------------
+# XGBoost model (placeholder — populated when training begins)
+# ---------------------------------------------------------------------------
+xgboost:
+  n_estimators: 300
+  max_depth: 6
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  scale_pos_weight: auto   # Set automatically from class ratio at train time
+  eval_metric: aucpr
+  early_stopping_rounds: 20
+  random_state: 42
+
+# ---------------------------------------------------------------------------
+# Evaluation
+# ---------------------------------------------------------------------------
+evaluation:
+  # Fraction of the timeline reserved for out-of-sample testing.
+  # Training uses everything before the split; test uses everything after.
+  temporal_test_fraction: 0.2
+  metrics:
+    - pr_auc
+    - roc_auc
+    - precision
+    - recall
+    - f1
+    - brier_score
+  calibration_bins: 10

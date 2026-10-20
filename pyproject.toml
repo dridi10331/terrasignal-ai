@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "terrasignal"
+version = "0.1.0"
+description = "Geospatial wildfire risk analysis and satellite-based fire detection forecasting"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "TerraSignal AI" }]
+keywords = [
+    "machine-learning",
+    "wildfire-risk",
+    "geospatial-ai",
+    "xgboost",
+    "remote-sensing",
+    "climate-data",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+
+dependencies = [
+    "pandas==2.2.2",
+    "numpy==1.26.4",
+    "pyarrow==16.1.0",
+    "matplotlib==3.9.0",
+    "pyyaml==6.0.1",
+    "scikit-learn==1.5.0",
+    "xgboost==2.0.3",
+    "duckdb==0.10.3",
+    "requests==2.32.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.2.2",
+    "pytest-cov==5.0.0",
+    "ruff==0.4.8",
+    "ipykernel==6.29.4",
+    "notebook==7.2.0",
+]
+api = [
+    "fastapi==0.111.0",
+    "uvicorn[standard]==0.30.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
